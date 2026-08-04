@@ -52,7 +52,7 @@
 
         .card {
             margin-top: 20px;
-            width: 82%;
+            width: 84%;
             max-width: 310px;
             border-radius: 8px;
             position: relative;
@@ -89,10 +89,9 @@
             right: -6px;
         }
 
-        /* Nới rộng padding trên/dưới để kéo dài phần nền màu trắng */
         .card-body {
             background-color: #ffffff;
-            padding: 22px 15px 22px 15px;
+            padding: 18px 15px 16px 15px;
             text-align: center;
             color: #000;
             border-bottom-left-radius: 8px;
@@ -100,55 +99,53 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
         }
 
         .time {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             color: #111111;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             letter-spacing: 0.5px;
             line-height: 1.2;
             width: 100%;
         }
 
-        /* Tăng kích thước khung chứa mã QR lên 210px x 210px */
         #qrcode {
-            width: 210px;
-            height: 210px;
-            min-width: 210px;
-            min-height: 210px;
+            width: 220px;
+            height: 220px;
+            min-width: 220px;
+            min-height: 220px;
             margin: 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            position: relative;
         }
 
         #qrcode img, 
         #qrcode canvas {
-            width: 210px !important;
-            height: 210px !important;
-            max-width: 210px !important;
-            max-height: 210px !important;
+            width: 220px !important;
+            height: 220px !important;
+            max-width: 220px !important;
+            max-height: 220px !important;
             display: block !important;
-            margin: 0 auto !important;
         }
 
         .refresh {
-            margin-top: 16px;
+            margin-top: 14px;
             width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
         }
 
         .refresh-title {
             cursor: pointer;
-            font-size: 14px;
-            color: #333333;
+            font-size: 13px;
+            color: #666666;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            display: inline-block;
         }
 
         .note {
@@ -177,6 +174,7 @@
             <div class="time" id="currentTime">--</div>
             <div id="qrcode"></div>
             <div class="refresh">
+                <span class="refresh-title">申请离场</span>
                 <span onclick="generateQRCode(event)" class="refresh-title">刷新二维码</span>
             </div>
         </div>
@@ -221,8 +219,8 @@
 
             new QRCode(qrcodeElement, {
                 text: accessData,
-                width: 210,
-                height: 210,
+                width: 220,
+                height: 220,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.M
