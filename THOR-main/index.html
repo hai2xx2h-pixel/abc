@@ -3,9 +3,12 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Chuyển thanh trạng thái iOS sang màu sáng (nền trắng, chữ đen) -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- Đổi màu nền thanh công cụ trình duyệt/status bar thành trắng -->
+    <meta name="theme-color" content="#ffffff">
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
     <link rel="apple-touch-icon" href="icon.png">
     <title>二维码通行</title>
@@ -37,7 +40,7 @@
         .header {
             margin-top: 45px;
             font-size: 19px;
-            color: #F5D57F; /* Đã hạ tông màu vàng chữ tiêu đề nhạt và dịu hơn */
+            color: #F5D57F;
             font-weight: 500;
             text-align: center;
         }
@@ -52,7 +55,7 @@
         }
 
         .card-header {
-            background-color: #F0B849; /* Hạ độ đậm của nền thẻ vàng */
+            background-color: #F0B849;
             padding: 16px 10px;
             text-align: center;
             color: white;
@@ -106,7 +109,7 @@
         .note {
             margin: 30px 10% 0 10%;
             font-size: 14px;
-            color: #E6DCBD; /* Đã chỉnh chữ chú thích nhạt hơn */
+            color: #E6DCBD;
             line-height: 1.6;
             text-align: center;
             letter-spacing: 0.3px;
