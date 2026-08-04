@@ -21,6 +21,8 @@
             width: 100%;
             min-height: 100vh;
             background-color: #2f3347;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -122,9 +124,6 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
 
         #qrcode img, 
@@ -149,7 +148,6 @@
             font-size: 13px;
             color: #666666;
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
 
         .note {
@@ -189,8 +187,6 @@
     </div>
 
     <script>
-        let qrCodeInstance;
-
         function pad(num) {
             return num < 10 ? '0' + num : num;
         }
@@ -233,11 +229,11 @@
             });
         }
 
-        // TÍNH NĂNG ĐỔI MÀU TIÊU ĐỀ KHI NHẤN GIỮ MÃ QR
+        // TÍNH NĂNG NHẤN GIỮ NỀN TỐI 10 GIÂY ĐỂ ĐỔI MÀU
         let isGreen = false;
-        let pressTimer;
+        let pressTimer = null;
+        const HOLD_DURATION = 10000; // 10000 ms = 10 giây
 
-        const qrcodeContainer = document.getElementById('qrcode');
         const cardHeader = document.getElementById('cardHeader');
         const headerText = document.getElementById('headerText');
 
@@ -252,23 +248,33 @@
             }
         }
 
-        function startPress() {
+        function startPress(e) {
+            // Loại trừ các vùng nội dung (chỉ kích hoạt khi nhấn vào nền tối bên ngoài)
+            if (e.target.closest('.card') || e.target.closest('.top-status-bar')) {
+                return;
+            }
+
+            clearTimeout(pressTimer);
             pressTimer = setTimeout(() => {
                 toggleHeaderColor();
-            }, 400);
+            }, HOLD_DURATION);
         }
 
         function cancelPress() {
-            clearTimeout(pressTimer);
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
         }
 
-        qrcodeContainer.addEventListener('touchstart', startPress, { passive: true });
-        qrcodeContainer.addEventListener('touchend', cancelPress);
-        qrcodeContainer.addEventListener('touchcancel', cancelPress);
+        // Đăng ký sự kiện trên toàn trang
+        document.addEventListener('touchstart', startPress, { passive: true });
+        document.addEventListener('touchend', cancelPress);
+        document.addEventListener('touchcancel', cancelPress);
 
-        qrcodeContainer.addEventListener('mousedown', startPress);
-        qrcodeContainer.addEventListener('mouseup', cancelPress);
-        qrcodeContainer.addEventListener('mouseleave', cancelPress);
+        document.addEventListener('mousedown', startPress);
+        document.addEventListener('mouseup', cancelPress);
+        document.addEventListener('mouseleave', cancelPress);
 
         updateTime();
         generateQRCode();
