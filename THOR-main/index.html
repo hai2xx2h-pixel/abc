@@ -5,10 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <!-- Chuyển thanh trạng thái iOS sang màu sáng (nền trắng, chữ đen) -->
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <!-- Đổi màu nền thanh công cụ trình duyệt/status bar thành trắng -->
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#e2e4e9">
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
     <link rel="apple-touch-icon" href="icon.png">
     <title>二维码通行</title>
@@ -21,8 +19,8 @@
 
         html, body {
             width: 100%;
-            height: 100vh;
-            background-color: #1a1c29;
+            min-height: 100vh;
+            background-color: #2f3347;
         }
 
         body {
@@ -37,91 +35,127 @@
             align-items: center;
         }
 
+        /* Thanh trạng thái màu trắng/xám phía trên cùng giống hệt Hình 2 */
+        .top-status-bar {
+            width: 100%;
+            height: 44px;
+            background-color: #e2e4e9;
+            flex-shrink: 0;
+        }
+
         .header {
-            margin-top: 45px;
+            margin-top: 25px;
             font-size: 19px;
-            color: #F5D57F;
+            color: #f3c759;
             font-weight: 500;
             text-align: center;
         }
 
         .card {
-            margin-top: 25px;
-            width: 86%;
-            max-width: 350px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            margin-top: 20px;
+            width: 84%;
+            max-width: 340px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
         }
 
         .card-header {
-            background-color: #F0B849;
+            background-color: #ebad25;
             padding: 16px 10px;
             text-align: center;
-            color: white;
-            font-size: 16px;
+            color: #ffffff;
+            font-size: 15px;
             font-weight: 400;
-            letter-spacing: 0.5px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            position: relative;
+        }
+
+        /* 2 vết khuyết hình tròn ở 2 bên mép khớp nối giữa phần vàng và phần trắng */
+        .circle1, .circle2 {
+            position: absolute;
+            background-color: #2f3347;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            bottom: -6px;
+            z-index: 10;
+        }
+
+        .circle1 {
+            left: -6px;
+        }
+
+        .circle2 {
+            right: -6px;
         }
 
         .card-body {
             background-color: #ffffff;
-            padding: 20px 15px 15px 15px;
+            padding: 16px 15px 15px 15px;
             text-align: center;
             color: #000;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
         }
 
         .time {
             font-size: 16px;
             font-weight: 600;
-            color: #222222;
-            margin-bottom: 12px;
+            color: #111111;
+            margin-bottom: 10px;
             letter-spacing: 0.5px;
         }
 
         #qrcode {
             margin: 0 auto;
-            width: 240px;
-            height: 240px;
+            width: 230px;
+            height: 230px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         #qrcode img {
-            width: 240px !important;
-            height: 240px !important;
+            width: 230px !important;
+            height: 230px !important;
         }
 
         .refresh {
-            margin-top: 15px;
-            margin-bottom: 5px;
+            margin-top: 12px;
+            margin-bottom: 4px;
         }
 
         .refresh-title {
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             color: #333333;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
         }
 
         .note {
-            margin: 30px 10% 0 10%;
+            margin: 25px 10% 0 10%;
             font-size: 14px;
-            color: #E6DCBD;
+            color: #e5d8b7;
             line-height: 1.6;
             text-align: center;
-            letter-spacing: 0.3px;
         }
     </style>
 </head>
 
 <body>
+    <!-- Khung tạo nền trắng/xám trên cùng chuẩn theo Hình 2 -->
+    <div class="top-status-bar"></div>
+
     <div class="header">V25111639(Nguyễn Văn Hải)</div>
+    
     <div class="card">
         <div class="card-header">
             将二维码对准扫描器刷码出场
+            <div class="circle1"></div>
+            <div class="circle2"></div>
         </div>
 
         <div class="card-body">
@@ -132,6 +166,7 @@
             </div>
         </div>
     </div>
+
     <div class="note">
         尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
     </div>
@@ -175,8 +210,8 @@
             } else {
                 qrCodeInstance = new QRCode(qrcodeElement, {
                     text: accessData,
-                    width: 240,
-                    height: 240,
+                    width: 230,
+                    height: 230,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.H
