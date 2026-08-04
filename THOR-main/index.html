@@ -52,8 +52,8 @@
 
         .card {
             margin-top: 20px;
-            width: 80%;
-            max-width: 295px;
+            width: 82%;
+            max-width: 310px;
             border-radius: 8px;
             position: relative;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
@@ -61,7 +61,7 @@
 
         .card-header {
             background-color: #ebad25;
-            padding: 14px 8px;
+            padding: 15px 8px;
             text-align: center;
             color: #ffffff;
             font-size: 15px;
@@ -89,9 +89,10 @@
             right: -6px;
         }
 
+        /* Nới rộng padding trên/dưới để kéo dài phần nền màu trắng */
         .card-body {
             background-color: #ffffff;
-            padding: 16px 12px 16px 12px;
+            padding: 22px 15px 22px 15px;
             text-align: center;
             color: #000;
             border-bottom-left-radius: 8px;
@@ -106,18 +107,18 @@
             font-size: 15px;
             font-weight: 600;
             color: #111111;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             letter-spacing: 0.5px;
             line-height: 1.2;
             width: 100%;
         }
 
-        /* Khung chứa cố định 160px x 160px và cắt bỏ hoàn toàn mảng ảnh tràn ra ngoài */
+        /* Tăng kích thước khung chứa mã QR lên 210px x 210px */
         #qrcode {
-            width: 160px;
-            height: 160px;
-            min-width: 160px;
-            min-height: 160px;
+            width: 210px;
+            height: 210px;
+            min-width: 210px;
+            min-height: 210px;
             margin: 0 auto;
             display: flex;
             justify-content: center;
@@ -126,19 +127,18 @@
             position: relative;
         }
 
-        /* Ép cả thẻ canvas lẫn img sinh ra bởi thư viện phải tuân thủ kích thước 160px */
         #qrcode img, 
         #qrcode canvas {
-            width: 160px !important;
-            height: 160px !important;
-            max-width: 160px !important;
-            max-height: 160px !important;
+            width: 210px !important;
+            height: 210px !important;
+            max-width: 210px !important;
+            max-height: 210px !important;
             display: block !important;
             margin: 0 auto !important;
         }
 
         .refresh {
-            margin-top: 12px;
+            margin-top: 16px;
             width: 100%;
         }
 
@@ -221,8 +221,8 @@
 
             new QRCode(qrcodeElement, {
                 text: accessData,
-                width: 160,
-                height: 160,
+                width: 210,
+                height: 210,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.M
