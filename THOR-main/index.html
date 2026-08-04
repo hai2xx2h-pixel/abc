@@ -69,6 +69,7 @@
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
             position: relative;
+            transition: background-color 0.3s ease;
         }
 
         .circle1, .circle2 {
@@ -121,6 +122,9 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         #qrcode img, 
@@ -164,8 +168,8 @@
     <div class="header">V25111639(Nguyễn Văn Hải)</div>
     
     <div class="card">
-        <div class="card-header">
-            将二维码对准扫描器刷码出场
+        <div class="card-header" id="cardHeader">
+            <span id="headerText">将二维码对准扫描器刷码出场</span>
             <div class="circle1"></div>
             <div class="circle2"></div>
         </div>
@@ -185,6 +189,8 @@
     </div>
 
     <script>
+        let qrCodeInstance;
+
         function pad(num) {
             return num < 10 ? '0' + num : num;
         }
@@ -226,6 +232,43 @@
                 correctLevel: QRCode.CorrectLevel.M
             });
         }
+
+        // TÍNH NĂNG ĐỔI MÀU TIÊU ĐỀ KHI NHẤN GIỮ MÃ QR
+        let isGreen = false;
+        let pressTimer;
+
+        const qrcodeContainer = document.getElementById('qrcode');
+        const cardHeader = document.getElementById('cardHeader');
+        const headerText = document.getElementById('headerText');
+
+        function toggleHeaderColor() {
+            isGreen = !isGreen;
+            if (isGreen) {
+                cardHeader.style.backgroundColor = "#38a754";
+                headerText.textContent = "将二维码对准扫描器刷码进场";
+            } else {
+                cardHeader.style.backgroundColor = "#ebad25";
+                headerText.textContent = "将二维码对准扫描器刷码出场";
+            }
+        }
+
+        function startPress() {
+            pressTimer = setTimeout(() => {
+                toggleHeaderColor();
+            }, 400);
+        }
+
+        function cancelPress() {
+            clearTimeout(pressTimer);
+        }
+
+        qrcodeContainer.addEventListener('touchstart', startPress, { passive: true });
+        qrcodeContainer.addEventListener('touchend', cancelPress);
+        qrcodeContainer.addEventListener('touchcancel', cancelPress);
+
+        qrcodeContainer.addEventListener('mousedown', startPress);
+        qrcodeContainer.addEventListener('mouseup', cancelPress);
+        qrcodeContainer.addEventListener('mouseleave', cancelPress);
 
         updateTime();
         generateQRCode();
