@@ -221,38 +221,27 @@
             return num < 10 ? '0' + num : num;
         }
 
-        // BIẾN LƯU TRỮ ĐỘ LỆCH KHI RESET
-        let timeOffset = 0;
+        // Tạo mốc dịch chuyển ngẫu nhiên cố định cho phiên chạy để tạo cảm giác thời gian thực
+        const staticShift = 245; 
 
         function updateAllTimers() {
             const now = new Date();
             
-            // 1. Cập nhật dòng ngày giờ trên QR code
+            // 1. Dòng hiển thị ngày giờ trên mã QR
             const formattedTime = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
             document.getElementById('currentTime').textContent = formattedTime;
 
-            // 2. Cập nhật đồng hồ màu xanh chạy liên tục theo thời gian thực (đã trừ đi offset)
-            let totalSeconds = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
-            let activeSeconds = totalSeconds - timeOffset;
-            
-            if (activeSeconds < 0) {
-                activeSeconds += 86400; // Tránh số âm nếu lệch qua đêm
-            }
+            // 2. Đồng hồ màu xanh tự tính toán dựa trực tiếp trên Phút và Giây hệ thống
+            // Tuyệt đối không bị ảnh hưởng bởi việc đóng/mở hay reset ứng dụng
+            let currentMinutes = now.getMinutes();
+            let currentSeconds = now.getSeconds();
 
-            const h = Math.floor(activeSeconds / 3600);
-            const m = Math.floor((activeSeconds % 3600) / 60);
-            const s = activeSeconds % 60;
-            
-            document.getElementById('statusTimer').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-        }
+            let totalActiveSeconds = (currentMinutes * 60) + currentSeconds + staticShift;
 
-        // KHI BẤM RESET / ĐỔI MÀU THẺ: Tính toán độ lệch thời gian để đồng hồ xanh quay về 00:00:00
-        function resetStatusTimer() {
-            const now = new Date();
-            timeOffset = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
-            localStorage.setItem('savedTimeOffset', timeOffset); // Lưu tạm vào máy
+            const h = Math.floor(totalActiveSeconds / 3600);
+            const m = Math.floor((totalActiveSeconds % 3600) / 60);
+            const s = totalActiveSeconds % 60;
             
-            const h = 0, m = 0, s = 0;
             document.getElementById('statusTimer').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
         }
 
@@ -286,8 +275,6 @@
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.M
             });
-
-            resetStatusTimer();
         }
 
         let isGreen = false;
@@ -299,7 +286,6 @@
 
         function toggleHeaderColor() {
             isGreen = !isGreen;
-            resetStatusTimer(); 
 
             if (isGreen) {
                 cardHeader.style.backgroundColor = "#38a754";
@@ -333,16 +319,6 @@
         document.addEventListener('mousedown', startPress);
         document.addEventListener('mouseup', cancelPress);
         document.addEventListener('mouseleave', cancelPress);
-
-        // KHỞI TẠO BAN ĐẦU: Lấy lại offset đã lưu (nếu có)
-        const savedOffset = localStorage.getItem('savedTimeOffset');
-        if (savedOffset) {
-            timeOffset = parseInt(savedOffset, 10);
-        } else {
-            // Lần đầu mở trang web lên, tự động coi mốc hiện tại là 00:00:00
-            const now = new Date();
-            timeOffset = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
-        }
 
         updateAllTimers();
         generateQRCode();
