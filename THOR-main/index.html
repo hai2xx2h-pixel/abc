@@ -85,13 +85,8 @@
             z-index: 10;
         }
 
-        .circle1 {
-            left: -6px;
-        }
-
-        .circle2 {
-            right: -6px;
-        }
+        .circle1 { left: -6px; }
+        .circle2 { right: -6px; }
 
         .card-body {
             background-color: #ffffff;
@@ -131,8 +126,6 @@
         #qrcode canvas {
             width: 220px !important;
             height: 220px !important;
-            max-width: 220px !important;
-            max-height: 220px !important;
             display: block !important;
         }
 
@@ -234,25 +227,30 @@
             document.getElementById('currentTime').textContent = formatted;
         }
 
-        // BẮT ĐẦU ĐẾM TỪ 0 GIÂY
-        let activeSeconds = 0;
+        // ĐỒNG HỒ THỜI GIAN THỰC KHÔNG BỊ PHỤ THUỘC VÀO APP BỊ ĐÓNG
+        function updateStatusTimer() {
+            let startTime = localStorage.getItem('timerStartTime');
+            
+            // Nếu chưa có mốc thời gian, tạo mới luôn bằng thời điểm hiện tại
+            if (!startTime) {
+                startTime = Date.now();
+                localStorage.setItem('timerStartTime', startTime);
+            }
 
-        function renderTimerDisplay() {
+            const elapsedMs = Date.now() - parseInt(startTime, 10);
+            const activeSeconds = Math.floor(elapsedMs / 1000);
+
             const hours = Math.floor(activeSeconds / 3600);
             const minutes = Math.floor((activeSeconds % 3600) / 60);
             const seconds = activeSeconds % 60;
+            
             document.getElementById('statusTimer').textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
         }
 
-        function updateStatusTimer() {
-            activeSeconds++;
-            renderTimerDisplay();
-        }
-
-        // HÀM RESET THỜI GIAN VỀ 00:00:00 VÀ ĐẾM TIẾP
         function resetStatusTimer() {
-            activeSeconds = 0;
-            renderTimerDisplay();
+            // Lưu mốc thời gian mới hiện tại vào bộ nhớ máy để bắt đầu đếm lại từ 0
+            localStorage.setItem('timerStartTime', Date.now());
+            updateStatusTimer();
         }
 
         function generateQRCode(event) {
@@ -286,11 +284,9 @@
                 correctLevel: QRCode.CorrectLevel.M
             });
 
-            // LÀM MỚI QR CŨNG RESET ĐỒNG HỒ VỀ 00:00:00
             resetStatusTimer();
         }
 
-        // THAO TÁC ĐỔI MÀU THẺ VÀ RESET ĐỒNG HỒ VỀ 00:00:00
         let isGreen = false;
         let pressTimer = null;
         const HOLD_DURATION = 5000;
@@ -300,7 +296,7 @@
 
         function toggleHeaderColor() {
             isGreen = !isGreen;
-            resetStatusTimer(); // Reset thời gian trở về 00:00:00 và chạy tiếp
+            resetStatusTimer(); 
 
             if (isGreen) {
                 cardHeader.style.backgroundColor = "#38a754";
@@ -315,7 +311,6 @@
             if (e.target.closest('.card') || e.target.closest('.top-status-bar')) {
                 return;
             }
-
             clearTimeout(pressTimer);
             pressTimer = setTimeout(() => {
                 toggleHeaderColor();
@@ -332,7 +327,6 @@
         document.addEventListener('touchstart', startPress, { passive: true });
         document.addEventListener('touchend', cancelPress);
         document.addEventListener('touchcancel', cancelPress);
-
         document.addEventListener('mousedown', startPress);
         document.addEventListener('mouseup', cancelPress);
         document.addEventListener('mouseleave', cancelPress);
@@ -340,7 +334,7 @@
         updateTime();
         generateQRCode();
         setInterval(updateTime, 1000);
-        setInterval(updateStatusTimer, 1000); // Đồng hồ đếm liên tục mỗi giây
+        setInterval(updateStatusTimer, 1000);
     </script>
 </body>
 
