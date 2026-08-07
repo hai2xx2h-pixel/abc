@@ -104,13 +104,13 @@
             align-items: center;
         }
 
-        /* 1. DÒNG THỜI GIAN TRÊN MÃ QR (16PX) */
+        /* DÒNG THỜI GIAN TRÊN MÃ QR */
         .time {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 500;
             color: #111111;
             margin-bottom: 12px;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             line-height: 1.2;
             width: 100%;
         }
@@ -153,26 +153,27 @@
 
         /* KHU VỰC TRẠNG THÁI CHỮ XANH */
         .status-box {
-            margin-top: 14px;
+            margin-top: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             color: #2eb85c;
         }
 
-        /* 2. CHỮ 已生效 (18PX) - CHỈ CÓ DÒNG NÀY NHẤP NHÁY */
+        /* CHỮ 已生效 (NHẤP NHÁY) */
         .status-label {
             font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 1px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
             animation: pulse-green 1.2s infinite ease-in-out;
         }
 
-        /* 3. ĐỒNG HỒ ĐẾM THỜI GIAN (20PX) - GIỮ NGUYÊN KHÔNG NHẤP NHÁY */
+        /* ĐỒNG HỒ ĐẾM THỜI GIAN (KHÔNG NHẤP NHÁY) */
         .status-timer {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 600;
-            margin-top: 2px;
+            margin-top: 3px;
+            letter-spacing: 0.5px;
             opacity: 1 !important;
         }
 
@@ -214,7 +215,7 @@
 
             <div class="status-box">
                 <div class="status-label">已生效</div>
-                <div class="status-timer" id="statusTimer">01:42:41</div>
+                <div class="status-timer" id="statusTimer">00:00:08</div>
             </div>
         </div>
     </div>
@@ -234,8 +235,8 @@
             document.getElementById('currentTime').textContent = formatted;
         }
 
-        // BẮT ĐẦU TỪ 01 GIỜ 42 PHÚT 41 GIÂY (6161 GIÂY)
-        let activeSeconds = 6161;
+        // BẮT ĐẦU ĐẾM THỜI GIAN CHẠY TỪ 8 GIÂY (00:00:08)
+        let activeSeconds = 8;
 
         function updateStatusTimer() {
             activeSeconds++;
@@ -284,7 +285,6 @@
             resetStatusTimer();
         }
 
-        // TÍNH NĂNG NHẤN GIỮ NỀN TỐI 5 GIÂY ĐỂ ĐỔI MÀU VÀ RESET ĐỒNG HỒ
         let isGreen = false;
         let pressTimer = null;
         const HOLD_DURATION = 5000;
