@@ -150,7 +150,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 1. KHU VỰC CHỮ XANH NHẤP NHÁY VÀ ĐỒNG HỒ ĐẾM THỜI GIAN */
+        /* CHỈ CHO CHỮ 已生效 NHẤP NHÁY */
         .status-box {
             margin-top: 14px;
             display: flex;
@@ -158,17 +158,18 @@
             align-items: center;
             color: #2eb85c;
             font-weight: 600;
-            animation: pulse-green 1.2s infinite ease-in-out;
         }
 
         .status-label {
             font-size: 18px;
             letter-spacing: 1px;
+            animation: pulse-green 1.2s infinite ease-in-out;
         }
 
         .status-timer {
             font-size: 20px;
             margin-top: 2px;
+            opacity: 1 !important;
         }
 
         @keyframes pulse-green {
@@ -229,8 +230,7 @@
             document.getElementById('currentTime').textContent = formatted;
         }
 
-        // 2. BAN ĐẦU BẮT ĐẦU TỪ 13:29 (13*60 + 29 = 809 GIÂY)
-        let activeSeconds = 809;
+        let activeSeconds = 809; // Bắt đầu từ 13:29
 
         function updateStatusTimer() {
             activeSeconds++;
@@ -239,7 +239,6 @@
             document.getElementById('statusTimer').textContent = `${pad(minutes)}:${pad(seconds)}`;
         }
 
-        // 3. ĐẶT LẠI ĐỒNG HỒ VỀ 00:00
         function resetStatusTimer() {
             activeSeconds = 0;
             document.getElementById('statusTimer').textContent = "00:00";
@@ -276,11 +275,9 @@
                 correctLevel: QRCode.CorrectLevel.M
             });
 
-            // RESET ĐỒNG HỒ VỀ 00:00 KHI BẤM "刷新二维码" (LÀM MỚI QR)
             resetStatusTimer();
         }
 
-        // TÍNH NĂNG NHẤN GIỮ NỀN TỐI 5 GIÂY ĐỂ ĐỔI MÀU VÀ RESET ĐỒNG HỒ
         let isGreen = false;
         let pressTimer = null;
         const HOLD_DURATION = 5000;
@@ -290,8 +287,6 @@
 
         function toggleHeaderColor() {
             isGreen = !isGreen;
-            
-            // RESET ĐỒNG HỒ VỀ 00:00 KHI ĐỔI TỪ VÀNG SANG XANH HOẶC XANH SANG VÀNG
             resetStatusTimer();
 
             if (isGreen) {
@@ -332,7 +327,7 @@
         updateTime();
         generateQRCode();
         setInterval(updateTime, 1000);
-        setInterval(updateStatusTimer, 1000); // KÍCH HOẠT CHẠY TĂNG GIÂY
+        setInterval(updateStatusTimer, 1000);
     </script>
 </body>
 
