@@ -78,4 +78,264 @@
             position: absolute;
             background-color: #2f3347;
             width: 12px;
-            height: 12
+            height: 12px;
+            border-radius: 50%;
+            bottom: -6px;
+            z-index: 10;
+        }
+
+        .circle1 {
+            left: -6px;
+        }
+
+        .circle2 {
+            right: -6px;
+        }
+
+        .card-body {
+            background-color: #ffffff;
+            padding: 18px 15px 16px 15px;
+            text-align: center;
+            color: #000;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 1. DÒNG THỜI GIAN TRÊN MÃ QR (16PX) */
+        .time {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111111;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            width: 100%;
+        }
+
+        #qrcode {
+            width: 220px;
+            height: 220px;
+            min-width: 220px;
+            min-height: 220px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #qrcode img, 
+        #qrcode canvas {
+            width: 220px !important;
+            height: 220px !important;
+            max-width: 220px !important;
+            max-height: 220px !important;
+            display: block !important;
+        }
+
+        .refresh {
+            margin-top: 14px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .refresh-title {
+            cursor: pointer;
+            font-size: 13px;
+            color: #666666;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* KHU VỰC TRẠNG THÁI CHỮ XANH */
+        .status-box {
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #2eb85c;
+        }
+
+        /* 2. CHỮ 已生效 (18PX) - CHỈ CÓ DÒNG NÀY NHẤP NHÁY */
+        .status-label {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            animation: pulse-green 1.2s infinite ease-in-out;
+        }
+
+        /* 3. ĐỒNG HỒ ĐẾM THỜI GIAN (20PX) - GIỮ NGUYÊN KHÔNG NHẤP NHÁY */
+        .status-timer {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 2px;
+            opacity: 1 !important;
+        }
+
+        @keyframes pulse-green {
+            0% { opacity: 1; }
+            50% { opacity: 0.25; }
+            100% { opacity: 1; }
+        }
+
+        .note {
+            margin: 25px 10% 0 10%;
+            font-size: 14px;
+            color: #E6DCBD;
+            line-height: 1.6;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-status-bar"></div>
+
+    <div class="header">V25111639(Nguyễn Văn Hải)</div>
+    
+    <div class="card">
+        <div class="card-header" id="cardHeader">
+            <span id="headerText">将二维码对准扫描器刷码出场</span>
+            <div class="circle1"></div>
+            <div class="circle2"></div>
+        </div>
+
+        <div class="card-body">
+            <div class="time" id="currentTime">--</div>
+            <div id="qrcode"></div>
+            <div class="refresh">
+                <span class="refresh-title">申请离场</span>
+                <span onclick="generateQRCode(event)" class="refresh-title">刷新二维码</span>
+            </div>
+
+            <div class="status-box">
+                <div class="status-label">已生效</div>
+                <div class="status-timer" id="statusTimer">01:42:41</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="note">
+        尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
+    </div>
+
+    <script>
+        function pad(num) {
+            return num < 10 ? '0' + num : num;
+        }
+
+        function updateTime() {
+            const now = new Date();
+            const formatted = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+            document.getElementById('currentTime').textContent = formatted;
+        }
+
+        // BẮT ĐẦU TỪ 01 GIỜ 42 PHÚT 41 GIÂY (6161 GIÂY)
+        let activeSeconds = 6161;
+
+        function updateStatusTimer() {
+            activeSeconds++;
+            const hours = Math.floor(activeSeconds / 3600);
+            const minutes = Math.floor((activeSeconds % 3600) / 60);
+            const seconds = activeSeconds % 60;
+            document.getElementById('statusTimer').textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        function resetStatusTimer() {
+            activeSeconds = 0;
+            document.getElementById('statusTimer').textContent = "00:00:00";
+        }
+
+        function generateQRCode(event) {
+            if (event && event.currentTarget) {
+                event.currentTarget.blur();
+            }
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+            const employeeId = "V25111639";
+            const employeeName = "Nguyễn Văn Hải";
+            const uniqueToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+            const accessData = `https://Wistron.com/access?id=${employeeId}&name=${encodeURIComponent(employeeName)}&time=${encodeURIComponent(formattedTime)}&token=${uniqueToken}`;
+            
+            const qrcodeElement = document.getElementById('qrcode');
+            qrcodeElement.innerHTML = ""; 
+
+            new QRCode(qrcodeElement, {
+                text: accessData,
+                width: 220,
+                height: 220,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            resetStatusTimer();
+        }
+
+        // TÍNH NĂNG NHẤN GIỮ NỀN TỐI 5 GIÂY ĐỂ ĐỔI MÀU VÀ RESET ĐỒNG HỒ
+        let isGreen = false;
+        let pressTimer = null;
+        const HOLD_DURATION = 5000;
+
+        const cardHeader = document.getElementById('cardHeader');
+        const headerText = document.getElementById('headerText');
+
+        function toggleHeaderColor() {
+            isGreen = !isGreen;
+            resetStatusTimer();
+
+            if (isGreen) {
+                cardHeader.style.backgroundColor = "#38a754";
+                headerText.textContent = "将二维码对准扫描器刷码进场";
+            } else {
+                cardHeader.style.backgroundColor = "#f2c75b";
+                headerText.textContent = "将二维码对准扫描器刷码出场";
+            }
+        }
+
+        function startPress(e) {
+            if (e.target.closest('.card') || e.target.closest('.top-status-bar')) {
+                return;
+            }
+
+            clearTimeout(pressTimer);
+            pressTimer = setTimeout(() => {
+                toggleHeaderColor();
+            }, HOLD_DURATION);
+        }
+
+        function cancelPress() {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+                pressTimer = null;
+            }
+        }
+
+        document.addEventListener('touchstart', startPress, { passive: true });
+        document.addEventListener('touchend', cancelPress);
+        document.addEventListener('touchcancel', cancelPress);
+
+        document.addEventListener('mousedown', startPress);
+        document.addEventListener('mouseup', cancelPress);
+        document.addEventListener('mouseleave', cancelPress);
+
+        updateTime();
+        generateQRCode();
+        setInterval(updateTime, 1000);
+        setInterval(updateStatusTimer, 1000);
+    </script>
+</body>
+
+</html>
