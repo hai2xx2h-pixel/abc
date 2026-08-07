@@ -221,9 +221,7 @@
             return num < 10 ? '0' + num : num;
         }
 
-        // Biến tạm để tạo hiệu ứng reset ảo khi click
-        let clickOffset = 0;
-
+        // HÀM ĐỒNG BỘ THỜI GIAN THEO HỆ THỐNG MÁY CHỐNG BỊ RESET VỀ 0
         function updateAllTimers() {
             const now = new Date();
             
@@ -231,36 +229,19 @@
             const formattedTime = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
             document.getElementById('currentTime').textContent = formattedTime;
 
-            // 2. Đồng hồ màu xanh tự động tính toán đồng bộ theo phút hệ thống
+            // 2. Đồng hồ màu xanh lấy chuẩn Phút và Giây của điện thoại
+            // Tuyệt đối chạy liên tục, không bị reset khi đổi QR hay giữ đổi màu thẻ
             let currentMinutes = now.getMinutes();
             let currentSeconds = now.getSeconds();
 
-            // Chu kỳ lặp lại mỗi 10 phút, không sợ mất dữ liệu khi kill app
-            let loopMinutes = currentMinutes % 10; 
-            let totalActiveSeconds = (loopMinutes * 60) + currentSeconds - clickOffset;
-
-            if (totalActiveSeconds < 0) {
-                totalActiveSeconds += 600; // Đảm bảo số dương trong chu kỳ 10 phút
-            }
-
             const h = 0;
-            const m = Math.floor(totalActiveSeconds / 60);
-            const s = totalActiveSeconds % 60;
+            const m = currentMinutes;
+            const s = currentSeconds;
             
             document.getElementById('statusTimer').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
         }
 
-        // Khi bấm đổi màu thẻ hoặc làm mới QR: Tạo hiệu ứng reset đưa đồng hồ xanh tạm thời về gần số nhỏ
-        function resetStatusTimer() {
-            const now = new Date();
-            let currentMinutes = now.getMinutes();
-            let currentSeconds = now.getSeconds();
-            let loopMinutes = currentMinutes % 10;
-            
-            // Thiết lập độ lệch để số hiển thị quay về 00:00:02 ngay lập tức
-            clickOffset = (loopMinutes * 60) + currentSeconds - 2; 
-            updateAllTimers();
-        }
+        // Đã loại bỏ hoàn toàn các hàm reset thời gian cũ tại đây
 
         function generateQRCode(event) {
             if (event && event.currentTarget) {
@@ -293,7 +274,7 @@
                 correctLevel: QRCode.CorrectLevel.M
             });
 
-            resetStatusTimer();
+            // Không gọi hàm xóa thời gian khi đổi QR
         }
 
         let isGreen = false;
@@ -305,7 +286,7 @@
 
         function toggleHeaderColor() {
             isGreen = !isGreen;
-            resetStatusTimer(); 
+            // Không gọi hàm xóa thời gian khi đổi màu thẻ
 
             if (isGreen) {
                 cardHeader.style.backgroundColor = "#38a754";
