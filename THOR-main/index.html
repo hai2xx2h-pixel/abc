@@ -221,28 +221,53 @@
             return num < 10 ? '0' + num : num;
         }
 
-        // Tạo mốc dịch chuyển ngẫu nhiên cố định cho phiên chạy để tạo cảm giác thời gian thực
-        const staticShift = 245; 
+        // HÀM LƯU COOKIE (Không bị mất khi kill app đa nhiệm)
+        function setCookie(name, value, days) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
+        }
 
-        function updateAllTimers() {
+        // HÀM LẤY COOKIE
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function updateTime() {
             const now = new Date();
+            const formatted = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+            document.getElementById('currentTime').textContent = formatted;
+        }
+
+        // ĐỒNG HỒ XANH DÙNG COOKIE: Đếm cực chuẩn, không bị reset khi vuốt app
+        function updateStatusTimer() {
+            let startTime = getCookie('timerStartTimeCookie');
             
-            // 1. Dòng hiển thị ngày giờ trên mã QR
-            const formattedTime = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-            document.getElementById('currentTime').textContent = formattedTime;
+            if (!startTime) {
+                startTime = Date.now();
+                setCookie('timerStartTimeCookie', startTime, 7); // Lưu giữ trong 7 ngày
+            }
 
-            // 2. Đồng hồ màu xanh tự tính toán dựa trực tiếp trên Phút và Giây hệ thống
-            // Tuyệt đối không bị ảnh hưởng bởi việc đóng/mở hay reset ứng dụng
-            let currentMinutes = now.getMinutes();
-            let currentSeconds = now.getSeconds();
+            const elapsedMs = Date.now() - parseInt(startTime, 10);
+            const activeSeconds = Math.floor(elapsedMs / 1000);
 
-            let totalActiveSeconds = (currentMinutes * 60) + currentSeconds + staticShift;
-
-            const h = Math.floor(totalActiveSeconds / 3600);
-            const m = Math.floor((totalActiveSeconds % 3600) / 60);
-            const s = totalActiveSeconds % 60;
+            const hours = Math.floor(activeSeconds / 3600);
+            const minutes = Math.floor((activeSeconds % 3600) / 60);
+            const seconds = activeSeconds % 60;
             
-            document.getElementById('statusTimer').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+            document.getElementById('statusTimer').textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        function resetStatusTimer() {
+            setCookie('timerStartTimeCookie', Date.now(), 7); // Đặt mốc mới khi chuyển trạng thái
+            updateStatusTimer();
         }
 
         function generateQRCode(event) {
@@ -275,6 +300,8 @@
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.M
             });
+
+            resetStatusTimer();
         }
 
         let isGreen = false;
@@ -286,6 +313,7 @@
 
         function toggleHeaderColor() {
             isGreen = !isGreen;
+            resetStatusTimer(); 
 
             if (isGreen) {
                 cardHeader.style.backgroundColor = "#38a754";
@@ -320,9 +348,10 @@
         document.addEventListener('mouseup', cancelPress);
         document.addEventListener('mouseleave', cancelPress);
 
-        updateAllTimers();
+        updateTime();
         generateQRCode();
-        setInterval(updateAllTimers, 1000);
+        setInterval(updateTime, 1000);
+        setInterval(updateStatusTimer, 1000);
     </script>
 </body>
 
