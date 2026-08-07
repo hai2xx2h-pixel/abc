@@ -221,53 +221,45 @@
             return num < 10 ? '0' + num : num;
         }
 
-        // HÀM LƯU COOKIE (Không bị mất khi kill app đa nhiệm)
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
-        }
+        // Biến tạm để tạo hiệu ứng reset ảo khi click
+        let clickOffset = 0;
 
-        // HÀM LẤY COOKIE
-        function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        }
-
-        function updateTime() {
+        function updateAllTimers() {
             const now = new Date();
-            const formatted = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-            document.getElementById('currentTime').textContent = formatted;
-        }
-
-        // ĐỒNG HỒ XANH DÙNG COOKIE: Đếm cực chuẩn, không bị reset khi vuốt app
-        function updateStatusTimer() {
-            let startTime = getCookie('timerStartTimeCookie');
             
-            if (!startTime) {
-                startTime = Date.now();
-                setCookie('timerStartTimeCookie', startTime, 7); // Lưu giữ trong 7 ngày
+            // 1. Dòng hiển thị ngày giờ trên mã QR
+            const formattedTime = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+            document.getElementById('currentTime').textContent = formattedTime;
+
+            // 2. Đồng hồ màu xanh tự động tính toán đồng bộ theo phút hệ thống
+            let currentMinutes = now.getMinutes();
+            let currentSeconds = now.getSeconds();
+
+            // Chu kỳ lặp lại mỗi 10 phút, không sợ mất dữ liệu khi kill app
+            let loopMinutes = currentMinutes % 10; 
+            let totalActiveSeconds = (loopMinutes * 60) + currentSeconds - clickOffset;
+
+            if (totalActiveSeconds < 0) {
+                totalActiveSeconds += 600; // Đảm bảo số dương trong chu kỳ 10 phút
             }
 
-            const elapsedMs = Date.now() - parseInt(startTime, 10);
-            const activeSeconds = Math.floor(elapsedMs / 1000);
-
-            const hours = Math.floor(activeSeconds / 3600);
-            const minutes = Math.floor((activeSeconds % 3600) / 60);
-            const seconds = activeSeconds % 60;
+            const h = 0;
+            const m = Math.floor(totalActiveSeconds / 60);
+            const s = totalActiveSeconds % 60;
             
-            document.getElementById('statusTimer').textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+            document.getElementById('statusTimer').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
         }
 
+        // Khi bấm đổi màu thẻ hoặc làm mới QR: Tạo hiệu ứng reset đưa đồng hồ xanh tạm thời về gần số nhỏ
         function resetStatusTimer() {
-            setCookie('timerStartTimeCookie', Date.now(), 7); // Đặt mốc mới khi chuyển trạng thái
-            updateStatusTimer();
+            const now = new Date();
+            let currentMinutes = now.getMinutes();
+            let currentSeconds = now.getSeconds();
+            let loopMinutes = currentMinutes % 10;
+            
+            // Thiết lập độ lệch để số hiển thị quay về 00:00:02 ngay lập tức
+            clickOffset = (loopMinutes * 60) + currentSeconds - 2; 
+            updateAllTimers();
         }
 
         function generateQRCode(event) {
@@ -348,10 +340,9 @@
         document.addEventListener('mouseup', cancelPress);
         document.addEventListener('mouseleave', cancelPress);
 
-        updateTime();
+        updateAllTimers();
         generateQRCode();
-        setInterval(updateTime, 1000);
-        setInterval(updateStatusTimer, 1000);
+        setInterval(updateAllTimers, 1000);
     </script>
 </body>
 
