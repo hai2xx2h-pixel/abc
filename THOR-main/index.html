@@ -150,6 +150,33 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* 1. KHU VỰC CHỮ XANH NHẤP NHÁY VÀ ĐỒNG HỒ ĐẾM THỜI GIAN */
+        .status-box {
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #2eb85c;
+            font-weight: 600;
+            animation: pulse-green 1.2s infinite ease-in-out;
+        }
+
+        .status-label {
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .status-timer {
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        @keyframes pulse-green {
+            0% { opacity: 1; }
+            50% { opacity: 0.25; }
+            100% { opacity: 1; }
+        }
+
         .note {
             margin: 25px 10% 0 10%;
             font-size: 14px;
@@ -179,6 +206,11 @@
                 <span class="refresh-title">申请离场</span>
                 <span onclick="generateQRCode(event)" class="refresh-title">刷新二维码</span>
             </div>
+
+            <div class="status-box">
+                <div class="status-label">已生效</div>
+                <div class="status-timer" id="statusTimer">13:29</div>
+            </div>
         </div>
     </div>
 
@@ -195,6 +227,22 @@
             const now = new Date();
             const formatted = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
             document.getElementById('currentTime').textContent = formatted;
+        }
+
+        // 2. BAN ĐẦU BẮT ĐẦU TỪ 13:29 (13*60 + 29 = 809 GIÂY)
+        let activeSeconds = 809;
+
+        function updateStatusTimer() {
+            activeSeconds++;
+            const minutes = Math.floor(activeSeconds / 60);
+            const seconds = activeSeconds % 60;
+            document.getElementById('statusTimer').textContent = `${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        // 3. ĐẶT LẠI ĐỒNG HỒ VỀ 00:00
+        function resetStatusTimer() {
+            activeSeconds = 0;
+            document.getElementById('statusTimer').textContent = "00:00";
         }
 
         function generateQRCode(event) {
@@ -227,18 +275,25 @@
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.M
             });
+
+            // RESET ĐỒNG HỒ VỀ 00:00 KHI BẤM "刷新二维码" (LÀM MỚI QR)
+            resetStatusTimer();
         }
 
-        // TÍNH NĂNG NHẤN GIỮ NỀN TỐI 5 GIÂY ĐỂ ĐỔI MÀU
+        // TÍNH NĂNG NHẤN GIỮ NỀN TỐI 5 GIÂY ĐỂ ĐỔI MÀU VÀ RESET ĐỒNG HỒ
         let isGreen = false;
         let pressTimer = null;
-        const HOLD_DURATION = 5000; // 5000 ms = 5 giây
+        const HOLD_DURATION = 5000;
 
         const cardHeader = document.getElementById('cardHeader');
         const headerText = document.getElementById('headerText');
 
         function toggleHeaderColor() {
             isGreen = !isGreen;
+            
+            // RESET ĐỒNG HỒ VỀ 00:00 KHI ĐỔI TỪ VÀNG SANG XANH HOẶC XANH SANG VÀNG
+            resetStatusTimer();
+
             if (isGreen) {
                 cardHeader.style.backgroundColor = "#38a754";
                 headerText.textContent = "将二维码对准扫描器刷码进场";
@@ -249,7 +304,6 @@
         }
 
         function startPress(e) {
-            // Loại trừ các vùng nội dung (chỉ kích hoạt khi nhấn vào nền tối bên ngoài)
             if (e.target.closest('.card') || e.target.closest('.top-status-bar')) {
                 return;
             }
@@ -267,7 +321,6 @@
             }
         }
 
-        // Đăng ký sự kiện trên toàn trang
         document.addEventListener('touchstart', startPress, { passive: true });
         document.addEventListener('touchend', cancelPress);
         document.addEventListener('touchcancel', cancelPress);
@@ -279,6 +332,7 @@
         updateTime();
         generateQRCode();
         setInterval(updateTime, 1000);
+        setInterval(updateStatusTimer, 1000); // KÍCH HOẠT CHẠY TĂNG GIÂY
     </script>
 </body>
 
