@@ -221,16 +221,15 @@
             return num < 10 ? '0' + num : num;
         }
 
-        // HÀM ĐỒNG BỘ THỜI GIAN THEO HỆ THỐNG MÁY CHỐNG BỊ RESET VỀ 0
+        // ĐỒNG HỒ NEO HỆ THỐNG: Chạy liên tục trơn tru, miễn nhiễm với reset
         function updateAllTimers() {
             const now = new Date();
             
-            // 1. Dòng hiển thị ngày giờ trên mã QR
+            // 1. Cập nhật dòng chữ hiển thị thời gian trên mã QR
             const formattedTime = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
             document.getElementById('currentTime').textContent = formattedTime;
 
-            // 2. Đồng hồ màu xanh lấy chuẩn Phút và Giây của điện thoại
-            // Tuyệt đối chạy liên tục, không bị reset khi đổi QR hay giữ đổi màu thẻ
+            // 2. Cập nhật đồng hồ màu xanh đồng bộ hoàn toàn theo Phút và Giây hệ thống điện thoại
             let currentMinutes = now.getMinutes();
             let currentSeconds = now.getSeconds();
 
@@ -241,8 +240,7 @@
             document.getElementById('statusTimer').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
         }
 
-        // Đã loại bỏ hoàn toàn các hàm reset thời gian cũ tại đây
-
+        // Tạo mã QR mới (Không đụng đến đồng hồ, đồng hồ vẫn chạy liên tục)
         function generateQRCode(event) {
             if (event && event.currentTarget) {
                 event.currentTarget.blur();
@@ -273,8 +271,6 @@
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.M
             });
-
-            // Không gọi hàm xóa thời gian khi đổi QR
         }
 
         let isGreen = false;
@@ -284,9 +280,9 @@
         const cardHeader = document.getElementById('cardHeader');
         const headerText = document.getElementById('headerText');
 
+        // Đổi màu thẻ (Không đụng đến đồng hồ, đồng hồ vẫn chạy liên tục)
         function toggleHeaderColor() {
             isGreen = !isGreen;
-            // Không gọi hàm xóa thời gian khi đổi màu thẻ
 
             if (isGreen) {
                 cardHeader.style.backgroundColor = "#38a754";
@@ -321,6 +317,7 @@
         document.addEventListener('mouseup', cancelPress);
         document.addEventListener('mouseleave', cancelPress);
 
+        // Khởi chạy đồng hồ và QR
         updateAllTimers();
         generateQRCode();
         setInterval(updateAllTimers, 1000);
