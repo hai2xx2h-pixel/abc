@@ -456,4 +456,111 @@
 
             function applyHeaderColor() {
                 if (isGreen) {
-                    cardHeader.style.backgroundColor = "#38a75
+                    cardHeader.style.backgroundColor = "#38a754";
+                    headerText.textContent = "将二维码对准扫描器刷码进场";
+                } else {
+                    cardHeader.style.backgroundColor = "#f2c75b";
+                    headerText.textContent = "将二维码对准扫描器刷码出场";
+                }
+            }
+
+            // Khôi phục hoặc tạo mới mốc thời gian bắt đầu bộ đếm
+            let startTime = localStorage.getItem(TIMER_STORAGE_KEY);
+            if (!startTime) {
+                startTime = Date.now();
+                localStorage.setItem(TIMER_STORAGE_KEY, String(startTime));
+            } else {
+                startTime = Number(startTime);
+            }
+
+            function resetTimer() {
+                startTime = Date.now();
+                localStorage.setItem(TIMER_STORAGE_KEY, String(startTime));
+                statusTimer.textContent = "00:00:00";
+                updateAllTimers();
+            }
+
+            function toggleHeaderColor() {
+                isGreen = !isGreen;
+                localStorage.setItem(COLOR_STORAGE_KEY, isGreen ? "green" : "yellow");
+                applyHeaderColor();
+                resetTimer();
+            }
+
+            // Nhấp vào header thẻ để đổi màu xanh / vàng và reset đếm giờ
+            cardHeader.addEventListener("click", () => {
+                toggleHeaderColor();
+            });
+
+            function updateAllTimers() {
+                const now = new Date();
+                const formattedTime =
+                    `${now.getFullYear()}-` +
+                    `${String(now.getMonth() + 1).padStart(2, "0")}-` +
+                    `${String(now.getDate()).padStart(2, "0")} ` +
+                    `${String(now.getHours()).padStart(2, "0")}:` +
+                    `${String(now.getMinutes()).padStart(2, "0")}:` +
+                    `${String(now.getSeconds()).padStart(2, "0")}`;
+
+                currentTimeEl.textContent = formattedTime;
+
+                const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startTime) / 1000));
+                const hours = Math.floor(elapsedSeconds / 3600);
+                const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+                const seconds = elapsedSeconds % 60;
+
+                statusTimer.textContent =
+                    `${String(hours).padStart(2, "0")}:` +
+                    `${String(minutes).padStart(2, "0")}:` +
+                    `${String(seconds).padStart(2, "0")}`;
+            }
+
+            function generateQRCode(event) {
+                if (event && event.currentTarget) {
+                    event.currentTarget.blur();
+                }
+
+                qrcodeContainer.innerHTML = "";
+                const now = new Date();
+                const formattedTime =
+                    `${now.getFullYear()}-` +
+                    `${String(now.getMonth() + 1).padStart(2, "0")}-` +
+                    `${String(now.getDate()).padStart(2, "0")} ` +
+                    `${String(now.getHours()).padStart(2, "0")}:` +
+                    `${String(now.getMinutes()).padStart(2, "0")}:` +
+                    `${String(now.getSeconds()).padStart(2, "0")}`;
+
+                const uniqueToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+
+                const accessData =
+                    `https://YOUR-AUTHORIZED-DOMAIN/access` +
+                    `?id=${encodeURIComponent(employeeId)}` +
+                    `&name=${encodeURIComponent(employeeName)}` +
+                    `&time=${encodeURIComponent(formattedTime)}` +
+                    `&token=${encodeURIComponent(uniqueToken)}`;
+
+                new QRCode(qrcodeContainer, {
+                    text: accessData,
+                    width: 210,
+                    height: 210,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            }
+
+            // Khởi chạy hệ thống
+            applyHeaderColor();
+            updateAllTimers();
+            generateQRCode();
+
+            // Cập nhật đồng hồ mỗi giây
+            setInterval(updateAllTimers, 1000);
+
+            refreshQRCodeBtn.addEventListener("click", generateQRCode);
+        });
+    </script>
+
+</body>
+
+</html>
