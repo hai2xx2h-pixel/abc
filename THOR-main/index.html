@@ -123,7 +123,28 @@
             width: 100%;
         }
 
-        /* MÃ QR GỌN GÀNG ĐÚNG MẪU GỐC */
+        /* KHUNG BAO QUANH MÃ QR VỚI 4 GÓC QUÉT */
+        .qrcode-wrapper {
+            position: relative;
+            padding: 8px;
+            display: inline-block;
+        }
+
+        .corner {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-color: #111111;
+            border-style: solid;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .corner-tl { top: 0; left: 0; border-width: 2.5px 0 0 2.5px; }
+        .corner-tr { top: 0; right: 0; border-width: 2.5px 2.5px 0 0; }
+        .corner-bl { bottom: 0; left: 0; border-width: 0 0 2.5px 2.5px; }
+        .corner-br { bottom: 0; right: 0; border-width: 0 2.5px 2.5px 0; }
+
         #qrcode {
             width: 200px;
             height: 200px;
@@ -217,8 +238,14 @@
         <div class="card-body">
             <div class="time" id="currentTime">--</div>
             
-            <!-- MÃ QR TRỰC TIẾP KHÔNG CÓ VIỀN GÓC -->
-            <div id="qrcode"></div>
+            <!-- KHUNG 4 GÓC QUÉT MÃ QR -->
+            <div class="qrcode-wrapper">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+                <div id="qrcode"></div>
+            </div>
 
             <div class="refresh">
                 <span onclick="generateQRCode(event)" class="refresh-title">刷新二维码</span>
