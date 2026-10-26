@@ -13,6 +13,8 @@
     <style>
         * {
             box-sizing: border-box;
+             margin: 0;
+            padding: 0;
         }
 
         html {
@@ -20,17 +22,25 @@
         }
 
         body {
-            margin: 0;
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "SF Pro Text",
+                "PingFang SC",
+                "Helvetica Neue",
+                STHeiti,
+                sans-serif;
+
             background-image: url("background.png");
             background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+
             color: white;
+
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 0;
-            background-size: cover;
-            height: 100vh;
         }
 
         .header {
