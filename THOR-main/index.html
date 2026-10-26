@@ -1,19 +1,26 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
+    <!-- iPhone PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- STATUS BAR: NỀN SÁNG + ICON ĐEN -->
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <!-- MÀU HỆ THỐNG PHÍA TRÊN -->
     <meta name="theme-color" content="#f5f5f5">
+    <meta name="apple-mobile-web-app-title" content="员工码">
 
-    <!-- Library QR Code -->
+    <title>员工码</title>
+
+    <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
-
-    <title>二维码通行</title>
 
     <style>
         /* =====================================================
@@ -75,7 +82,7 @@
         }
 
         /* =====================================================
-           EMPLOYEE APP SCREEN
+           EMPLOYEE APP
         ===================================================== */
         .app-screen {
             position: fixed;
@@ -98,7 +105,7 @@
         }
 
         /* =====================================================
-           HEADER
+           EMPLOYEE HEADER
         ===================================================== */
         .header {
             width: 100%;
@@ -134,4 +141,614 @@
             height: 64px;
             min-height: 64px;
             padding: 12px 8px;
-            position: relative
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #f2c75b;
+            color: #ffffff;
+            border-radius: 8px 8px 0 0;
+            transition: background-color 0.25s ease;
+            cursor: pointer;
+        }
+
+        #headerText {
+            display: block;
+            width: 100%;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.35;
+            letter-spacing: 0;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* =====================================================
+           SIDE CIRCLES
+        ===================================================== */
+        .circle1,
+        .circle2 {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            bottom: -6px;
+            z-index: 10;
+            border-radius: 50%;
+            background-color: #30364f;
+        }
+
+        .circle1 {
+            left: -6px;
+        }
+
+        .circle2 {
+            right: -6px;
+        }
+
+        /* =====================================================
+           CARD BODY
+        ===================================================== */
+        .card-body {
+            width: 100%;
+            padding: 13px 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #ffffff;
+            color: #111111;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* =====================================================
+           TIME
+        ===================================================== */
+        .time {
+            width: 100%;
+            margin: 0 0 10px;
+            color: #111111;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.2;
+            letter-spacing: 0;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* =====================================================
+           QR
+        ===================================================== */
+        #qrcode {
+            width: 210px;
+            height: 210px;
+            min-width: 210px;
+            min-height: 210px;
+            max-width: 210px;
+            max-height: 210px;
+            margin: 0 auto;
+            padding: 0;
+            display: block;
+            overflow: hidden;
+            background-color: #ffffff;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        #qrcode img,
+        #qrcode canvas {
+            display: block !important;
+            width: 210px !important;
+            height: 210px !important;
+            min-width: 210px !important;
+            min-height: 210px !important;
+            max-width: 210px !important;
+            max-height: 210px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            transform: none !important;
+            filter: none !important;
+            image-rendering: pixelated;
+        }
+
+        /* =====================================================
+           ACTION ROW
+        ===================================================== */
+        .refresh {
+            width: 100%;
+            min-height: 18px;
+            margin-top: 9px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* =====================================================
+           ACTION TEXT
+        ===================================================== */
+        .leave-action,
+        .refresh-title {
+            color: #666666;
+            font-size: 12px;
+            font-weight: 300;
+            line-height: 1.2;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .refresh.has-leave {
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .leave-action.hidden {
+            display: none !important;
+        }
+
+        .leave-action:active,
+        .refresh-title:active {
+            opacity: 0.65;
+        }
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+        .status-box {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .status-label {
+            color: #9AE7B3;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.2;
+            animation: pulse-green 1.2s infinite ease-in-out;
+        }
+
+        .status-timer {
+            margin-top: 4px;
+            color: #16C653;
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.2;
+            letter-spacing: 0.2px;
+            opacity: 1 !important;
+            font-variant-numeric: tabular-nums;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* =====================================================
+           NOTE
+        ===================================================== */
+        .note {
+            width: 265px;
+            max-width: 68%;
+            margin: 28px auto 0;
+            padding: 0;
+            color: #E6DCBD;
+            font-size: 13px;
+            font-weight: 300;
+            line-height: 1.6;
+            letter-spacing: 0;
+            text-align: left;
+            text-indent: 2em;
+            white-space: normal;
+            word-break: normal;
+            overflow-wrap: normal;
+        }
+
+        /* =====================================================
+           LOGOUT
+        ===================================================== */
+        .logout-button {
+            margin-top: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #F5D57F;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* =====================================================
+           LOGIN
+        ===================================================== */
+        .login-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #30364f;
+            background-image: radial-gradient(circle at center, #3a415e 0%, #30364f 100%);
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 330px;
+            padding: 28px 24px;
+            background: rgba(255, 255, 255, 0.96);
+            color: #222222;
+            text-align: center;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .login-logo {
+            width: 65px;
+            height: 65px;
+            margin-bottom: 12px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .login-title {
+            font-size: 27px;
+            font-weight: 400;
+        }
+
+        .login-subtitle {
+            margin-top: 5px;
+            margin-bottom: 23px;
+            color: #777777;
+            font-size: 14px;
+        }
+
+        .employee-input {
+            width: 100%;
+            height: 46px;
+            padding: 0 10px;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            outline: none;
+            background: #ffffff;
+            color: #222222;
+            text-align: center;
+            font-size: 15px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .employee-input:focus {
+            border-color: #38a754;
+        }
+
+        .login-button {
+            width: 100%;
+            height: 46px;
+            margin-top: 12px;
+            border: 0;
+            border-radius: 8px;
+            background: #38a754;
+            color: #ffffff;
+            font-size: 15px;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+        }
+
+        .login-message {
+            min-height: 20px;
+            margin-top: 12px;
+            color: #d9534f;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =================================================
+         LOGIN
+    ================================================== -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <!-- Icon placeholder or data URI if icon.png is missing -->
+            <div style="width: 65px; height: 65px; background: #38a754; border-radius: 12px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">员</div>
+
+            <div class="login-title">
+                员工码
+            </div>
+
+            <div class="login-subtitle">
+                请输入员工编号
+            </div>
+
+            <input id="employeeCodeInput" class="employee-input" type="text" placeholder="员工编号" autocomplete="off"
+                autocapitalize="characters" spellcheck="false" value="V25111639">
+
+            <button id="loginButton" class="login-button" type="button">
+                登录
+            </button>
+
+            <div id="loginMessage" class="login-message"></div>
+        </div>
+    </div>
+
+
+    <!-- =================================================
+         EMPLOYEE APP
+    ================================================== -->
+    <main id="appScreen" class="app-screen hidden">
+
+        <!-- EMPLOYEE NAME -->
+        <div id="employeeHeader" class="header"></div>
+
+        <!-- =================================================
+             CARD
+        ================================================== -->
+        <div class="card">
+
+            <div id="cardHeader" class="card-header" title="点击切换 进场 / 出场">
+                <span id="headerText">
+                    将二维码对准扫描器刷码出场
+                </span>
+
+                <div class="circle1"></div>
+                <div class="circle2"></div>
+            </div>
+
+            <div class="card-body">
+
+                <!-- TIME -->
+                <div id="currentTime" class="time">
+                    --
+                </div>
+
+                <!-- QR -->
+                <div id="qrcode"></div>
+
+                <!-- QR ACTIONS -->
+                <div id="qrActions" class="refresh">
+                    <span id="leaveAction" class="leave-action hidden">
+                        申请离场
+                    </span>
+
+                    <span id="refreshQRCode" class="refresh-title">
+                        刷新二维码
+                    </span>
+                </div>
+
+                <!-- STATUS -->
+                <div class="status-box">
+                    <div class="status-label">
+                        已生效
+                    </div>
+
+                    <div id="statusTimer" class="status-timer">
+                        00:00:00
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             NOTE
+        ================================================== -->
+        <div class="note">
+            尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
+        </div>
+
+        <!-- LOGOUT -->
+        <button id="logoutButton" class="logout-button" type="button">
+            退出登录
+        </button>
+
+    </main>
+
+
+    <!-- =================================================
+         JAVASCRIPT LOGIC
+    ================================================== -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginScreen = document.getElementById("loginScreen");
+            const appScreen = document.getElementById("appScreen");
+            const employeeCodeInput = document.getElementById("employeeCodeInput");
+            const loginButton = document.getElementById("loginButton");
+            const loginMessage = document.getElementById("loginMessage");
+            const employeeHeader = document.getElementById("employeeHeader");
+            const cardHeader = document.getElementById("cardHeader");
+            const headerText = document.getElementById("headerText");
+            const currentTimeEl = document.getElementById("currentTime");
+            const qrcodeContainer = document.getElementById("qrcode");
+            const refreshQRCodeBtn = document.getElementById("refreshQRCode");
+            const statusTimer = document.getElementById("statusTimer");
+            const logoutButton = document.getElementById("logoutButton");
+
+            const TIMER_STORAGE_KEY = "qr_access_start_time";
+            const COLOR_STORAGE_KEY = "qr_access_color";
+            const EMP_ID_KEY = "qr_employee_id";
+            const EMP_NAME_KEY = "qr_employee_name";
+
+            // Danh sách nhân viên mẫu
+            const users = {
+                "V25111639": "Nguyễn Văn Hải"
+            };
+
+            // Kiểm tra trạng thái đăng nhập lưu trong localStorage
+            let currentId = localStorage.getItem(EMP_ID_KEY);
+            let currentName = localStorage.getItem(EMP_NAME_KEY);
+
+            if (currentId) {
+                showApp(currentId, currentName || users[currentId] || "Nguyễn Văn Hải");
+            } else {
+                showLogin();
+            }
+
+            loginButton.addEventListener("click", handleLogin);
+            employeeCodeInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") handleLogin();
+            });
+
+            function handleLogin() {
+                const code = employeeCodeInput.value.trim();
+                if (!code) {
+                    loginMessage.textContent = "请输入员工编号";
+                    return;
+                }
+                const name = users[code] || "Nguyễn Văn Hải";
+                localStorage.setItem(EMP_ID_KEY, code);
+                localStorage.setItem(EMP_NAME_KEY, name);
+                
+                if (!localStorage.getItem(TIMER_STORAGE_KEY)) {
+                    localStorage.setItem(TIMER_STORAGE_KEY, Date.now());
+                }
+
+                showApp(code, name);
+            }
+
+            logoutButton.addEventListener("click", () => {
+                localStorage.removeItem(EMP_ID_KEY);
+                localStorage.removeItem(EMP_NAME_KEY);
+                localStorage.removeItem(TIMER_STORAGE_KEY);
+                localStorage.removeItem(COLOR_STORAGE_KEY);
+                showLogin();
+            });
+
+            function showLogin() {
+                loginScreen.classList.remove("hidden");
+                appScreen.classList.add("hidden");
+            }
+
+            function showApp(id, name) {
+                loginScreen.classList.add("hidden");
+                appScreen.classList.remove("hidden");
+                employeeHeader.textContent = `${id}(${name})`;
+                initApp(id, name);
+            }
+
+            let isGreen = localStorage.getItem(COLOR_STORAGE_KEY) === "green";
+
+            function applyHeaderColor() {
+                if (isGreen) {
+                    cardHeader.style.backgroundColor = "#38a754";
+                    headerText.textContent = "将二维码对准扫描器刷码进场";
+                } else {
+                    cardHeader.style.backgroundColor = "#f2c75b";
+                    headerText.textContent = "将二维码对准扫描器刷码出场";
+                }
+            }
+
+            // Click vào header thẻ để chuyển đổi trạng thái Vào / Ra (进场 / 出场)
+            cardHeader.addEventListener("click", () => {
+                isGreen = !isGreen;
+                localStorage.setItem(COLOR_STORAGE_KEY, isGreen ? "green" : "yellow");
+                localStorage.setItem(TIMER_STORAGE_KEY, Date.now()); // Reset đếm giờ khi đổi trạng thái
+                applyHeaderColor();
+                updateTimers();
+            });
+
+            function initApp(id, name) {
+                applyHeaderColor();
+                generateQRCode(id, name);
+                updateTimers();
+
+                // Cập nhật đồng hồ mỗi giây
+                setInterval(updateTimers, 1000);
+
+                refreshQRCodeBtn.addEventListener("click", () => {
+                    generateQRCode(id, name);
+                });
+            }
+
+            function updateTimers() {
+                const now = new Date();
+                const formattedTime =
+                    `${now.getFullYear()}-` +
+                    `${String(now.getMonth() + 1).padStart(2, "0")}-` +
+                    `${String(now.getDate()).padStart(2, "0")} ` +
+                    `${String(now.getHours()).padStart(2, "0")}:` +
+                    `${String(now.getMinutes()).padStart(2, "0")}:` +
+                    `${String(now.getSeconds()).padStart(2, "0")}`;
+
+                currentTimeEl.textContent = formattedTime;
+
+                let startTime = localStorage.getItem(TIMER_STORAGE_KEY);
+                if (!startTime) {
+                    startTime = Date.now();
+                    localStorage.setItem(TIMER_STORAGE_KEY, startTime);
+                }
+
+                const elapsedSeconds = Math.max(0, Math.floor((Date.now() - Number(startTime)) / 1000));
+                const hours = Math.floor(elapsedSeconds / 3600);
+                const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+                const seconds = elapsedSeconds % 60;
+
+                statusTimer.textContent =
+                    `${String(hours).padStart(2, "0")}:` +
+                    `${String(minutes).padStart(2, "0")}:` +
+                    `${String(seconds).padStart(2, "0")}`;
+            }
+
+            function generateQRCode(id, name) {
+                qrcodeContainer.innerHTML = "";
+                const now = new Date();
+                const formattedTime =
+                    `${now.getFullYear()}-` +
+                    `${String(now.getMonth() + 1).padStart(2, "0")}-` +
+                    `${String(now.getDate()).padStart(2, "0")} ` +
+                    `${String(now.getHours()).padStart(2, "0")}:` +
+                    `${String(now.getMinutes()).padStart(2, "0")}:` +
+                    `${String(now.getSeconds()).padStart(2, "0")}`;
+
+                const uniqueToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+
+                const accessData =
+                    `https://YOUR-AUTHORIZED-DOMAIN/access` +
+                    `?id=${encodeURIComponent(id)}` +
+                    `&name=${encodeURIComponent(name)}` +
+                    `&time=${encodeURIComponent(formattedTime)}` +
+                    `&token=${encodeURIComponent(uniqueToken)}`;
+
+                new QRCode(qrcodeContainer, {
+                    text: accessData,
+                    width: 210,
+                    height: 210,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
