@@ -60,7 +60,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* ĐÃ SỬA KÍCH THƯỚC THẺ (CARD): Thu gọn max-width từ 310px xuống 290px */
         .card {
             margin-top: 20px;
             width: 84%;
@@ -124,7 +123,28 @@
             width: 100%;
         }
 
-        /* ĐÃ SỬA KÍCH THƯỚC MÃ QR: Giảm từ 220px xuống 200px */
+        /* KHUNG BAO QUANH QR CÓ 4 GÓC VIỀN */
+        .qrcode-wrapper {
+            position: relative;
+            padding: 6px;
+            display: inline-block;
+        }
+
+        .corner {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-color: #111111;
+            border-style: solid;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .corner-tl { top: 0; left: 0; border-width: 2px 0 0 2px; }
+        .corner-tr { top: 0; right: 0; border-width: 2px 2px 0 0; }
+        .corner-bl { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+        .corner-br { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+
         #qrcode {
             width: 200px;
             height: 200px;
@@ -217,7 +237,16 @@
 
         <div class="card-body">
             <div class="time" id="currentTime">--</div>
-            <div id="qrcode"></div>
+            
+            <!-- THÊM KHUNG 4 GÓC BAO QUANH MÃ QR -->
+            <div class="qrcode-wrapper">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+                <div id="qrcode"></div>
+            </div>
+
             <div class="refresh">
                 <span onclick="generateQRCode(event)" class="refresh-title">刷新二维码</span>
             </div>
@@ -233,11 +262,9 @@
     </div>
 
     <script>
-        /* CẤU HÌNH */
         const employeeId = "V25111639";
         const employeeName = "Nguyễn Văn Hải";
 
-        /* KEY LƯU TRỮ */
         const TIMER_STORAGE_KEY = "qr_access_start_time";
         const COLOR_STORAGE_KEY = "qr_access_color";
 
@@ -245,7 +272,6 @@
             return num < 10 ? "0" + num : String(num);
         }
 
-        /* KHÔI PHỤC TRẠNG THÁI MÀU */
         let savedColor = localStorage.getItem(COLOR_STORAGE_KEY);
         let isGreen = savedColor === "green";
 
@@ -262,7 +288,6 @@
             }
         }
 
-        /* KHÔI PHỤC THỜI ĐIỂM BẮT ĐẦU TIMER */
         let startTime = localStorage.getItem(TIMER_STORAGE_KEY);
         if (!startTime) {
             startTime = Date.now();
@@ -271,7 +296,6 @@
             startTime = Number(startTime);
         }
 
-        /* CẬP NHẬT ĐỒNG HỒ */
         function updateAllTimers() {
             const now = new Date();
 
@@ -312,7 +336,6 @@
             resetTimer();
         }
 
-        /* TẠO QR - ĐÃ SỬA KÍCH THƯỚC TRONG JS THÀNH 200 */
         function generateQRCode(event) {
             if (event && event.currentTarget) {
                 event.currentTarget.blur();
@@ -349,7 +372,6 @@
             });
         }
 
-        /* NHẤN GIỮ 5 GIÂY ĐỂ ĐỔI MÀU */
         let pressTimer = null;
         const HOLD_DURATION = 5000;
 
@@ -374,7 +396,6 @@
             }
         }
 
-        /* ĐĂNG KÝ SỰ KIỆN */
         document.addEventListener("touchstart", startPress, { passive: true });
         document.addEventListener("touchend", cancelPress);
         document.addEventListener("touchmove", cancelPress, { passive: true });
@@ -383,7 +404,6 @@
         document.addEventListener("mouseup", cancelPress);
         document.addEventListener("mouseleave", cancelPress);
 
-        /* KHỞI CHẠY */
         applyHeaderColor();
         updateAllTimers();
         generateQRCode();
