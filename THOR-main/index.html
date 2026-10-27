@@ -16,9 +16,9 @@
     <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 
     <style>
-        /* =========================
+        /* ==============================
            1. RESET
-        ========================= */
+        ============================== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -27,28 +27,21 @@
         }
 
         html {
+            position: fixed;
+            inset: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #252a3d;
+            background: #252a3d;
         }
 
         body {
             position: fixed;
             inset: 0;
-
-            width: 100%;
-            height: 100%;
-            height: 100dvh;
-
+            margin: 0;
+            padding: 0;
             overflow: hidden;
-            overscroll-behavior: none;
-
-            background-color: #252a3d;
-            background-image: url("background.png");
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: cover;
+            background: #252a3d;
 
             font-family:
                 -apple-system,
@@ -61,26 +54,48 @@
 
             -webkit-user-select: none;
             user-select: none;
+            overscroll-behavior: none;
+        }
+
+        /* ==============================
+           2. NỀN RIÊNG PHỦ TOÀN MÀN HÌNH
+           Không đặt height: 100dvh ở đây.
+        ============================== */
+        .background-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+
+            background-color: #252a3d;
+            background-image: url("background.png");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+
+            pointer-events: none;
         }
 
         .hidden {
             display: none !important;
         }
 
-        /* =========================
-           2. MAIN SCREEN
-           Phủ toàn bộ màn hình
-        ========================= */
+        /* ==============================
+           3. MÀN HÌNH CHÍNH
+        ============================== */
         .app-screen {
             position: fixed;
             inset: 0;
+            z-index: 1;
 
-            width: 100%;
-            height: 100%;
-            height: 100dvh;
+            width: auto;
+            height: auto;
+            min-width: 0;
+            min-height: 0;
 
             padding-top: calc(env(safe-area-inset-top, 0px) + 18px);
+            padding-right: 0;
             padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+            padding-left: 0;
 
             display: flex;
             flex-direction: column;
@@ -89,16 +104,12 @@
             overflow: hidden;
             overscroll-behavior: none;
 
-            background-color: #252a3d;
-            background-image: url("background.png");
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: cover;
+            background: transparent;
         }
 
-        /* =========================
-           3. TÊN NHÂN VIÊN
-        ========================= */
+        /* ==============================
+           4. TÊN NHÂN VIÊN
+        ============================== */
         .header {
             position: relative;
             z-index: 2;
@@ -118,11 +129,12 @@
             white-space: nowrap;
         }
 
-        /* =========================
-           4. QR CARD
-        ========================= */
+        /* ==============================
+           5. THẺ QR
+        ============================== */
         .card {
             position: relative;
+            z-index: 2;
             flex-shrink: 0;
 
             width: 68%;
@@ -135,9 +147,9 @@
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
         }
 
-        /* =========================
-           5. CARD HEADER
-        ========================= */
+        /* ==============================
+           6. ĐẦU THẺ
+        ============================== */
         .card-header {
             position: relative;
 
@@ -150,9 +162,9 @@
             align-items: center;
             justify-content: center;
 
-            text-align: center;
             color: #ffffff;
             background-color: #f2c75b;
+            text-align: center;
 
             border-radius: 8px 8px 0 0;
             transition: background-color 0.25s ease;
@@ -170,7 +182,7 @@
             white-space: nowrap;
         }
 
-        /* Hai chấm tròn ở cạnh thẻ */
+        /* Hai chấm tròn hai bên thẻ */
         .circle1,
         .circle2 {
             position: absolute;
@@ -192,9 +204,9 @@
             right: -6px;
         }
 
-        /* =========================
-           6. CARD BODY
-        ========================= */
+        /* ==============================
+           7. THÂN THẺ
+        ============================== */
         .card-body {
             width: 100%;
             padding: 13px 15px 10px;
@@ -210,7 +222,7 @@
             border-radius: 0 0 8px 8px;
         }
 
-        /* Đồng hồ */
+        /* Thời gian hiện tại */
         .time {
             width: 100%;
             margin: 0 0 10px;
@@ -224,9 +236,9 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* =========================
-           7. QR CODE
-        ========================= */
+        /* ==============================
+           8. MÃ QR
+        ============================== */
         #qrcode {
             width: 210px;
             height: 210px;
@@ -241,7 +253,7 @@
             display: block;
             overflow: hidden;
 
-            background-color: #ffffff;
+            background: #ffffff;
             border: 0;
         }
 
@@ -288,9 +300,9 @@
             border: 0 !important;
         }
 
-        /* =========================
-           8. CÁC NÚT THAO TÁC
-        ========================= */
+        /* ==============================
+           9. NÚT THAO TÁC
+        ============================== */
         .refresh {
             width: 100%;
             min-height: 18px;
@@ -323,9 +335,9 @@
             opacity: 0.65;
         }
 
-        /* =========================
-           9. TRẠNG THÁI VÀ BỘ ĐẾM
-        ========================= */
+        /* ==============================
+           10. TRẠNG THÁI VÀ ĐỒNG HỒ ĐẾM
+        ============================== */
         .status-box {
             margin-top: 12px;
 
@@ -371,10 +383,13 @@
             }
         }
 
-        /* =========================
-           10. DÒNG THÔNG BÁO
-        ========================= */
+        /* ==============================
+           11. THÔNG BÁO PHÍA DƯỚI
+        ============================== */
         .note {
+            position: relative;
+            z-index: 2;
+
             width: 265px;
             max-width: 76%;
             flex-shrink: 0;
@@ -395,9 +410,9 @@
             overflow-wrap: break-word;
         }
 
-        /* =========================
-           11. ĐIỆN THOẠI NHỎ
-        ========================= */
+        /* ==============================
+           12. ĐIỆN THOẠI NHỎ
+        ============================== */
         @media (max-width: 360px) {
             .header {
                 font-size: 15px;
@@ -414,9 +429,9 @@
             }
         }
 
-        /* =========================
-           12. MÀN HÌNH THẤP
-        ========================= */
+        /* ==============================
+           13. MÀN HÌNH THẤP
+        ============================== */
         @media (max-height: 700px) {
             .app-screen {
                 padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
@@ -470,12 +485,18 @@
 </head>
 
 <body>
+
+    <!-- LỚP NỀN RIÊNG, PHỦ TOÀN MÀN HÌNH -->
+    <div class="background-layer" aria-hidden="true"></div>
+
     <main id="appScreen" class="app-screen">
 
+        <!-- TÊN NHÂN VIÊN -->
         <div id="employeeHeader" class="header">
             V25111639 (Nguyễn Văn Hải)
         </div>
 
+        <!-- THẺ QR -->
         <section class="card" aria-label="二维码通行卡">
 
             <div id="cardHeader" class="card-header">
@@ -523,6 +544,7 @@
             </div>
         </section>
 
+        <!-- THÔNG BÁO -->
         <div class="note">
             尊敬的员工您好，您已进入企业涉密区域，出于企业安全考虑，您的手机摄像头将被禁止拍摄，感谢您的配合。
         </div>
@@ -533,9 +555,9 @@
         (() => {
             "use strict";
 
-            /* =========================
-               THÔNG TIN NHÂN VIÊN
-            ========================= */
+            /* ==============================
+               THÔNG TIN CÁ NHÂN
+            ============================== */
 
             const EMPLOYEE_ID = "V25111639";
             const EMPLOYEE_NAME = "Nguyễn Văn Hải";
@@ -544,19 +566,18 @@
             const HOLD_DURATION = 3000;
 
             /*
-             * Địa chỉ giữ chỗ.
-             * QR này chưa phải mã truy cập chính thức.
-             * Chỉ thay bằng dữ liệu QR được hệ thống
-             * công ty cấp phép.
+             * ĐỊA CHỈ QR MẪU.
+             * QR này chỉ hiển thị dữ liệu mẫu,
+             * không đảm bảo là mã truy cập hợp lệ.
              */
             const QR_ENDPOINT =
                 "https://YOUR-AUTHORIZED-DOMAIN/access";
 
             const STORAGE_KEY = "thor_personal_state_v1";
 
-            /* =========================
-               CÁC PHẦN TỬ HTML
-            ========================= */
+            /* ==============================
+               LẤY CÁC PHẦN TỬ
+            ============================== */
 
             const employeeHeader =
                 document.getElementById("employeeHeader");
@@ -585,17 +606,17 @@
             const refreshQRCode =
                 document.getElementById("refreshQRCode");
 
-            /* =========================
+            /* ==============================
                TRẠNG THÁI
-            ========================= */
+            ============================== */
 
             let isGreen = false;
             let timerStart = Date.now();
             let pressTimer = null;
 
-            /* =========================
+            /* ==============================
                HÀM TIỆN ÍCH
-            ========================= */
+            ============================== */
 
             function pad(value) {
                 return String(value).padStart(2, "0");
@@ -612,9 +633,9 @@
                 );
             }
 
-            /* =========================
-               LƯU TRẠNG THÁI TRÌNH DUYỆT
-            ========================= */
+            /* ==============================
+               ĐỌC TRẠNG THÁI ĐÃ LƯU
+            ============================== */
 
             function loadLocalState() {
                 try {
@@ -640,6 +661,10 @@
                 }
             }
 
+            /* ==============================
+               LƯU TRẠNG THÁI
+            ============================== */
+
             function saveLocalState() {
                 try {
                     localStorage.setItem(
@@ -657,9 +682,9 @@
                 }
             }
 
-            /* =========================
-               CẬP NHẬT MÀU THẺ
-            ========================= */
+            /* ==============================
+               ĐỔI MÀU THẺ
+            ============================== */
 
             function applyHeaderState() {
                 if (isGreen) {
@@ -690,9 +715,9 @@
                 updateClockAndTimer();
             }
 
-            /* =========================
+            /* ==============================
                ĐỒNG HỒ VÀ BỘ ĐẾM
-            ========================= */
+            ============================== */
 
             function updateClockAndTimer() {
                 const now = new Date();
@@ -712,14 +737,14 @@
                     `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
             }
 
-            /* =========================
+            /* ==============================
                TẠO QR HIỂN THỊ
-            ========================= */
+            ============================== */
 
             function generateQRCode() {
                 if (typeof QRCode === "undefined") {
                     qrcodeElement.textContent =
-                        "QR library chưa tải được. Hãy kiểm tra Internet.";
+                        "Không tải được thư viện QR. Hãy kiểm tra Internet.";
                     return;
                 }
 
@@ -747,9 +772,9 @@
                 });
             }
 
-            /* =========================
-               LÀM MỚI QR
-            ========================= */
+            /* ==============================
+               NÚT LÀM MỚI QR
+            ============================== */
 
             refreshQRCode.addEventListener("click", () => {
                 generateQRCode();
@@ -765,9 +790,9 @@
                 }
             });
 
-            /* =========================
+            /* ==============================
                GIỮ NGOÀI THẺ 3 GIÂY
-            ========================= */
+            ============================== */
 
             function startPress(event) {
                 if (
@@ -806,9 +831,9 @@
             document.addEventListener("mouseup", cancelPress);
             document.addEventListener("mouseleave", cancelPress);
 
-            /* =========================
-               KHÔNG CHO CUỘN TRANG
-            ========================= */
+            /* ==============================
+               NGĂN CUỘN TRANG
+            ============================== */
 
             document.addEventListener(
                 "touchmove",
@@ -826,9 +851,9 @@
                 { passive: false }
             );
 
-            /* =========================
-               KHỞI ĐỘNG
-            ========================= */
+            /* ==============================
+               KHỞI TẠO
+            ============================== */
 
             employeeHeader.textContent =
                 `${EMPLOYEE_ID} (${EMPLOYEE_NAME})`;
@@ -843,5 +868,6 @@
             window.addEventListener("pagehide", cancelPress);
         })();
     </script>
+
 </body>
 </html>
